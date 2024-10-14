@@ -1,0 +1,202 @@
+openapi: 3.0.0
+info:
+  description: "Лабораторная работа №1. Разработать спецификацию в формате OpenAPI для набора веб-сервисов"
+  title: Сервис-Ориентированная Архитектура
+  version: "1.0"
+tags:
+  - name: API
+    description: Операции, взаимодействующие с первым веб-сервисом
+paths:
+  /starships/{id}/unload:
+    post:
+      tags:
+        - API
+      summary: Выгрузить всех десантников с корабля
+      description: |
+        **Выгружает всех SpaceMarine из Starship**
+
+      parameters:
+        - description: Идентификатор элемента
+          in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            format: id
+          example: 1
+      responses:
+        "200":
+          description: Вызгрузка прошл успешно.
+        "400":
+          description: Невалидная схема документа или входные данные не верны.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                response:
+                  value: |-
+                    {
+                      "code": 400,
+                      "message": "Validation Failed"
+                    }
+        "404":
+          description: Элемент не найден.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                response:
+                  value: |-
+                    {
+                      "code": 404,
+                      "message": "Item not found"
+                    }
+  /starships/{starship-id}/load/{spacemarine-id}:
+    put:
+      tags:
+        - API
+      summary: Погрузить Космодесантника на Корабль
+      description: |
+        **Погружает выбранного SpaceMarine в выбранный Starship**
+
+      parameters:
+        - description: Идентификатор Starship
+          in: path
+          name: starship-id
+          required: true
+          schema:
+            type: integer
+            format: id
+          example: 1
+        - description: Идентификатор SpaceMarine
+          in: path
+          name: spacemarine-id
+          required: true
+          schema:
+            type: integer
+            format: id
+          example: 1
+      responses:
+        "200":
+          description: Погрузка прошло успешно.
+        "400":
+          description: Невалидная схема документа или входные данные не верны.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                response:
+                  value: |-
+                    {
+                      "code": 400,
+                      "message": "Validation Failed"
+                    }
+        "404":
+          description: Элемент не найден.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                response:
+                  value: |-
+                    {
+                      "code": 404,
+                      "message": "Item not found"
+                    }
+  /starships:
+    post:
+      tags:
+        - API
+      summary: Зачислить новый Отряд
+      description: |
+        **Создает новый объект Chapter**
+        
+          - Поле name не может быть равно null или быть пустым
+          - Поле marinesCount не может быть равно null 
+          - Поле marinesCount должно быть больше 0 и не более 1000
+          - Поле world не может быть равно null 
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Starship"
+      responses:
+        "200":
+          description: Создание прошло успешно.
+        "400":
+          description: Невалидная схема документа или входные данные не верны.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                response:
+                  value: |-
+                    {
+                      "code": 400,
+                      "message": "Validation Failed"
+                    }
+components:
+  schemas:
+    Coordinates:
+      type: object
+      required:
+        - x
+        - y
+      properties:
+        x:
+          type: integer
+          format: int64
+          nullable: false
+          description: Координата X
+          example: 100
+        y:
+          type: integer
+          nullable: false
+          description: Координата Y
+          example: -100
+    Starship:
+      type: object
+      required:
+        - name
+        - Coordinates
+        - health
+      properties:
+        name:
+          type: string
+          nullable: false
+          description: Название starship
+          example: "U.S.S. Discovery One"
+        Coordinates:
+           $ref: "#/components/schemas/Coordinates"
+        health:
+          type: integer
+          nullable: false
+          description: Количество здоровья
+          example: 100
+        marinesCount:
+          type: integer
+          nullable: false
+          description: Количество солдат
+          example: 500
+        fleet:
+          type: string
+          nullable: false
+          description: Название флота, к которому пренадлежит корабль
+          example: "Скарус"
+    Error:
+      required:
+        - code
+        - message
+      properties:
+        code:
+          nullable: false
+          type: integer
+        message:
+          nullable: false
+          type: string

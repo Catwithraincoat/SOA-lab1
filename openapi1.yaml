@@ -1,0 +1,609 @@
+openapi: 3.0.0
+info:
+  description: "Лабораторная работа №1. Разработать спецификацию в формате OpenAPI для набора веб-сервисов"
+  title: Сервис-Ориентированная Архитектура
+  version: "1.0"
+tags:
+  - name: Базовый набор
+    description: CRUD - операции для SpaceMarine
+  - name: Дополнительные операции
+    description: Расширенная работа с коллекцией
+paths:
+  /spacemarines:
+    post:
+      tags:
+        - Базовый набор
+      summary: Создать Космодесантника
+      description: |
+        **Создает новый объект SpaceMarine**
+
+          - Поле name не может быть равно null или быть пустым
+          - Поле coordinates не может быть равно null
+          - Поле marinesCount не может быть равно null 
+          - Поле marinesCount должно быть больше 0
+          - Поле weaponType не может быть равно null 
+          - Поле meleeWeapon не может быть равно null 
+          - Поле health не может быть null
+          - Поле health должно быть больше 0
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SpaceMarine"
+      responses:
+        "200":
+          description: Создание прошло успешно.
+        "400":
+          description: Невалидная схема документа или входные данные не верны.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                response:
+                  value: |-
+                    {
+                      "code": 400,
+                      "message": "Validation Failed"
+                    }
+  /spacemarines/{id}:
+    get:
+      tags:
+        - Базовый набор
+      summary: Получить Космодесантника по id
+      description: |
+        **Получить информацию об элементе SpaceMarine по идентификатору.**
+
+      parameters:
+        - description: Идентификатор элемента
+          in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            format: id
+          example: 1
+      responses:
+        "200":
+          description: Информация об элементе.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SpaceMarineResponse"
+        "400":
+          description: Невалидная схема документа или входные данные не верны.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                response:
+                  value: |-
+                    {
+                      "code": 400,
+                      "message": "Validation Failed"
+                    }
+        "404":
+          description: Элемент не найден.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                response:
+                  value: |-
+                    {
+                      "code": 404,
+                      "message": "Item not found"
+                    }
+    delete:
+      tags:
+        - Базовый набор
+      summary: Удалить Космодесантника по id
+      description: |
+        **Удалить элемент SpaceMarine по идентификатору**
+
+      parameters:
+        - description: Идентификатор
+          in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            format: id
+          example: 1
+      responses:
+        "200":
+          description: Удаление прошло успешно.
+        "400":
+          description: Невалидная схема документа или входные данные не верны.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                response:
+                  value: |-
+                    {
+                      "code": 400,
+                      "message": "Validation Failed"
+                    }
+        "404":
+          description: Элемент не найден.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                response:
+                  value: |-
+                    {
+                      "code": 404,
+                      "message": "Item not found"
+                    }
+    put:
+      tags:
+        - Базовый набор
+      summary: Обновить Космодесантника по id
+      description: |
+        **Изменяет объект SpaceMarine по идентификатору**
+
+          - Поле name не может быть равно null или быть пустым
+          - Поле coordinates не может быть равно null
+          - Поле marinesCount не может быть равно null 
+          - Поле marinesCount должно быть больше 0
+          - Поле weaponType не может быть равно null 
+          - Поле meleeWeapon не может быть равно null 
+          - Поле health не может быть null
+          - Поле health должно быть больше 0
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SpaceMarine"
+      parameters:
+        - description: Идентификатор элемента
+          in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            format: id
+          example: 1
+      responses:
+        "200":
+          description: Изменение прошло успешно.
+        "400":
+          description: Невалидная схема документа или входные данные не верны.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                response:
+                  value: |-
+                    {
+                      "code": 400,
+                      "message": "Validation Failed"
+                    }
+        "404":
+          description: Элемент не найден.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                response:
+                  value: |-
+                    {
+                      "code": 404,
+                      "message": "Item not found"
+                    }
+  /spacemarines/search:
+    post:
+      tags:
+        - Базовый набор
+      summary: Получить страницу Космодесантников по фильтру
+      description: |
+        **Получает список объектов SpaceMarine по запросу**
+        
+          - Поле page не может быть равно null
+          - Поле page не может быть меньше 1
+          - Поле limit не может быть равно null
+          - Поле limit не может быть меньше 1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SpaceMarineFilterRequest"
+      responses:
+        "200":
+          description: Список элементов.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SpaceMarineSearchResponse"
+        "400":
+          description: Невалидная схема документа или входные данные не верны.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                response:
+                  value: |-
+                    {
+                      "code": 400,
+                      "message": "Validation Failed"
+                    }
+  /spacemarines/group/melee:
+    post:
+      tags:
+        - Дополнительные операции
+      summary: Сгруппировать Космодесантников по meleeWeapon
+      description: |
+        **Сгруппировать объекты по значению поля meleeWeapon, вернуть количество элементов в каждой группе**
+
+      responses:
+        "200":
+          description: Распределение MeleeWeapon.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MeleeWeaponAllocation"
+  /spacemarines/search/name:
+    post:
+      tags:
+        - Дополнительные операции
+      summary: Получить массив Космодесантников по имени
+      description: |
+        **Вернуть массив объектов, значение поля name которых содержит заданную подстроку**
+        
+          - Поле name не может быть равно null
+          - Поле name не может быть пустым
+      parameters:
+        - description: Подстрока Name
+          in: query
+          name: name
+          required: true
+          schema:
+            type: string
+          example: "сру"
+      responses:
+        "200":
+          description: Список элементов.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SpaceMarineSearchResponse"
+        "400":
+          description: Невалидная схема документа или входные данные не верны.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                response:
+                  value: |-
+                    {
+                      "code": 400,
+                      "message": "Validation Failed"
+                    }
+  /spacemarines/search/health/greater:
+    post:
+      tags:
+        - Дополнительные операции
+      summary: Получить массив Космодесантников по нижней границе здоровья
+      description: |
+        **Вернуть массив объектов, значение поля health которых больше заданного**
+        
+          - Поле health не может быть равно null
+          - Поле health не может быть пустым
+      parameters:
+        - description: Значение health
+          in: query
+          name: health
+          required: true
+          schema:
+            type: integer
+          example: 42
+      responses:
+        "200":
+          description: Список элементов.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SpaceMarineSearchResponse"
+        "400":
+          description: Невалидная схема документа или входные данные не верны.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                response:
+                  value: |-
+                    {
+                      "code": 400,
+                      "message": "Validation Failed"
+                    }
+components:
+  schemas:
+    AstartesCategory:
+      type: string
+      description: Тип солдата
+      enum:
+        - AGGRESSOR
+        - ASSAULT
+        - HELIX
+    Weapon:
+      type: string
+      description: Тип оружия дальнего боя
+      enum:
+        - COMBI_FLAMER
+        - GRENADE_LAUNCHER
+        - INFERNO_PISTOL
+    MeleeWeapon:
+      type: string
+      description: Тип оружия ближнего война
+      enum:
+        - CHAIN_SWORD
+        - CHAIN_AXE
+        - POWER_FIST
+    Coordinates:
+      type: object
+      required:
+        - x
+        - y
+      properties:
+        x:
+          type: integer
+          format: int64
+          nullable: false
+          description: Координата X
+          example: 100
+        y:
+          type: integer
+          nullable: false
+          description: Координата Y
+          example: -100
+    Chapter:
+      type: object
+      required:
+        - name
+        - marinesCount
+        - world
+      properties:
+        name:
+          type: string
+          nullable: false
+          description: Название chapter
+          example: "Тестовое название"
+        parentLegion:
+          type: string
+          description: Нечто непонятное
+          nullable: true
+          example: "Тестовый легион"
+        marinesCount:
+          type: integer
+          nullable: false
+          description: Количество солдат
+          example: 50
+        world:
+          type: string
+          nullable: false
+          description: Название мира
+          example: "Тестовый мир"
+    Starship:
+      type: object
+      required:
+        - name
+        - Coordinates
+        - health
+      properties:
+        name:
+          type: string
+          nullable: false
+          description: Название starship
+          example: "U.S.S. Discovery One"
+        Coordinates:
+           $ref: "#/components/schemas/Coordinates"
+        health:
+          type: integer
+          nullable: false
+          description: Количество здоровья
+          example: 100
+        marinesCount:
+          type: integer
+          nullable: false
+          description: Количество солдат
+          example: 500
+        fleet:
+          type: string
+          nullable: false
+          description: Название флота, к которому пренадлежит корабль
+          example: "Скарус"
+    SpaceMarine:
+      type: object
+      required:
+        - name
+        - Coordinates
+        - health
+        - category
+        - weaponType
+        - meleeWeapon
+      properties:
+        name:
+          type: string
+          nullable: false
+          description: Имя SpaceMarine
+          example: "Думгай"
+        Coordinates:
+          $ref: "#/components/schemas/Coordinates"
+        health:
+          type: integer
+          nullable: false
+          description: Количество здоровья
+          example: 50
+        category:
+          $ref: "#/components/schemas/AstartesCategory"
+        weaponType:
+          $ref: "#/components/schemas/Weapon"
+        meleeWeapon:
+          $ref: "#/components/schemas/MeleeWeapon"
+        chapterId:
+          type: integer
+          nullable: true
+          description: Идентификатор Chapter
+          example: 1
+        starshipId:
+          type: integer
+          nullable: true
+          description: Идентификатор Starship
+          example: 1
+    SpaceMarineResponse:
+      type: object
+      required:
+        - id
+        - name
+        - Coordinates
+        - health
+        - category
+        - creationDate
+        - weaponType
+        - meleeWeapon
+      properties:
+        id:
+          type: integer
+          nullable: false
+          description: Идентификатор SpaceMarine
+          example: 1
+        name:
+          type: string
+          nullable: false
+          description: Имя SpaceMarine
+          example: "Думгай"
+        Coordinates:
+          $ref: "#/components/schemas/Coordinates"
+        creationDate:
+          type: string
+          nullable: false
+          format: date-time
+          description: Время создания элемента.
+        health:
+          type: integer
+          nullable: false
+          description: Количество здоровья
+          example: 50
+        category:
+          $ref: "#/components/schemas/AstartesCategory"
+        weaponType:
+          $ref: "#/components/schemas/Weapon"
+        meleeWeapon:
+          $ref: "#/components/schemas/MeleeWeapon"
+        chapter:
+          $ref: "#/components/schemas/Chapter"
+        starship:
+          $ref: "#/components/schemas/Starship"
+    SpaceMarineFields:
+      type: string
+      description: Поле для сортировки
+      enum:
+        - name
+        - health
+        - creationDate
+        - category
+        - weaponType
+        - meleeWeapon
+    SpaceMarineFilterRequest:
+      type: object
+      required:
+        - page
+        - limit
+      properties:
+        page:
+          type: integer
+          nullable: false
+          description: Номер страницы со списком полученных объектов
+          example: 1
+        limit:
+          type: integer
+          nullable: false
+          description: Количество элементов на одной странице
+          example: 10
+        id:
+          type: integer
+          nullable: true
+          description: Имя SpaceMarine, по которому будет произведена фильтрация
+          example: 1
+        name:
+          type: string
+          nullable: true
+          description: Имя SpaceMarine, по которому будет произведена фильтрация
+          example: "Думгай"
+        health:
+          type: integer
+          nullable: true
+          description: Количество здоровья, по которому будет произведена фильтрация
+          example: 50
+        creationDate:
+          type: string
+          nullable: true
+          format: date-time
+          description: Время создания элемента.
+        category:
+          type: string
+          nullable: true
+          description: Тип солдата, по которому будет произведена фильтрация
+          example: "AGGRESSOR"
+        weaponType:
+          type: string
+          nullable: true
+          description: Тип оружия дальнего боя, по которому будет произведена фильтрация
+          example: "COMBI_FLAMER"
+        meleeWeapon:
+          type: string
+          nullable: true
+          description: Тип оружия ближнего боя, по которому будет произведена фильтрация
+          example: "CHAIN_SWORD"
+        sortBy:
+          $ref: "#/components/schemas/SpaceMarineFields"
+    SpaceMarineSearchResponse:
+      type: object
+      properties:
+        items:
+          description: Список SpaceMarine по запросу.
+          type: array
+          items:
+            $ref: "#/components/schemas/SpaceMarineResponse"
+    MeleeWeaponAllocation:
+      type: object
+      required:
+        - CHAIN_SWORD
+        - CHAIN_AXE
+        - POWER_FIST
+      properties:
+        CHAIN_SWORD:
+          type: integer
+          description: Количество солдат с CHAIN_SWORD
+          example: 137
+        CHAIN_AXE:
+          type: integer
+          description: Количество солдат с CHAIN_AXE
+          example: 137
+        POWER_FIST:
+          type: integer
+          description: Количество солдат с POWER_FIST
+          example: 137
+    Error:
+      required:
+        - code
+        - message
+      properties:
+        code:
+          nullable: false
+          type: integer
+        message:
+          nullable: false
+          type: string
