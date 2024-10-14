@@ -1,41 +1,39 @@
-openapi: 3.0.0
+openapi: 3.0.3
 info:
-  description: "Лабораторная работа №1. Разработать спецификацию в формате OpenAPI для набора веб-сервисов"
-  title: Сервис-Ориентированная Архитектура
-  version: "1.0"
-tags:
-  - name: Базовый набор
-    description: CRUD - операции для SpaceMarine
-  - name: Дополнительные операции
-    description: Расширенная работа с коллекцией
+  title: СОА Лабораторная №1
+  description: Документация для набора веб-сервисов в рамках лабораторной №1
+  version: 0.0.1
 paths:
-  /spacemarines:
+  /movies:
     post:
-      tags:
-        - Базовый набор
-      summary: Создать Космодесантника
+      tags: [Базовые операции веб-сервиса №1]
+      summary: Создать объект 
       description: |
-        **Создает новый объект SpaceMarine**
-
-          - Поле name не может быть равно null или быть пустым
-          - Поле coordinates не может быть равно null
-          - Поле marinesCount не может быть равно null 
-          - Поле marinesCount должно быть больше 0
-          - Поле weaponType не может быть равно null 
-          - Поле meleeWeapon не может быть равно null 
-          - Поле health не может быть null
-          - Поле health должно быть больше 0
-
+        **Требования для объекта Movie**
+  
+        - name: Поле не может быть null, Строка не может быть пустой
+        - coordinates: Поле не может быть null ( x - integer, y - float)
+        - oscarsCount: Значение поля должно быть больше 0, Поле может быть null
+        - genre: Поле может быть null
+        - mpaaRating: Поле может быть null
+        - directorName: Поле не может быть null
+        
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/SpaceMarine"
+              $ref: "#/components/schemas/Movie"
+              
       responses:
-        "200":
-          description: Создание прошло успешно.
-        "400":
-          description: Невалидная схема документа или входные данные не верны.
+        200:
+          description: Объект успешно добавлен
+          content:
+            text/html:
+              schema:
+                type: string
+                example: ok
+        400:
+          description: Объект не соответсвует требованиям. Данные введены не верно
           content:
             application/json:
               schema:
@@ -45,34 +43,55 @@ paths:
                   value: |-
                     {
                       "code": 400,
-                      "message": "Validation Failed"
+                      "message": [
+                      {
+                        "field": "name",
+                        "inner_message": "Это поле обязательно для заполнения"},
+                      {
+                        "field": "oscarsCount",
+                        "inner_message": "Это поле должно быть больше 0, поле может быть null"
+                      }
+                      ]
                     }
-  /spacemarines/{id}:
+        429:
+          description: Слишком много запросов
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                response:
+                  value: |-
+                    {
+                      "code": 429,
+                      "message": [
+                      {
+                        "inner_message": "Вы превысили лимит запросов"}
+                      ]
+                    }
+  /movies/{id}:
     get:
-      tags:
-        - Базовый набор
-      summary: Получить Космодесантника по id
+      tags: [Базовые операции веб-сервиса №1]
+      summary: Получить объект по id
       description: |
-        **Получить информацию об элементе SpaceMarine по идентификатору.**
-
+        **Введите id фильма**
       parameters:
-        - description: Идентификатор элемента
-          in: path
+        - in: path
           name: id
           required: true
           schema:
             type: integer
             format: id
-          example: 1
+            example: 1
       responses:
-        "200":
-          description: Информация об элементе.
+        200:
+          description: Информация об объекте получена
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/SpaceMarineResponse"
-        "400":
-          description: Невалидная схема документа или входные данные не верны.
+                $ref: "#/components/schemas/MovieObjectResponse"
+        400:
+          description: Объект не соответсвует требованиям. Данные введены не верно
           content:
             application/json:
               schema:
@@ -82,10 +101,13 @@ paths:
                   value: |-
                     {
                       "code": 400,
-                      "message": "Validation Failed"
+                      "message": [
+                      {
+                        "inner_message": "ID введен неверно"}
+                      ]
                     }
-        "404":
-          description: Элемент не найден.
+        404:
+          description: Объект не найден
           content:
             application/json:
               schema:
@@ -95,29 +117,50 @@ paths:
                   value: |-
                     {
                       "code": 404,
-                      "message": "Item not found"
+                      "message": [
+                      {
+                        "inner_message": "Такого ID не существует"}
+                      ]
+                    }
+        429:
+          description: Слишком много запросов
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                response:
+                  value: |-
+                    {
+                      "code": 429,
+                      "message": [
+                      {
+                        "inner_message": "Вы превысили лимит запросов"}
+                      ]
                     }
     delete:
-      tags:
-        - Базовый набор
-      summary: Удалить Космодесантника по id
+      tags: [Базовые операции веб-сервиса №1]
+      summary: Удалить объект по id
       description: |
-        **Удалить элемент SpaceMarine по идентификатору**
-
+        **Введите id фильма**
       parameters:
-        - description: Идентификатор
-          in: path
+        - in: path
           name: id
           required: true
           schema:
             type: integer
             format: id
-          example: 1
+            example: 1
       responses:
-        "200":
-          description: Удаление прошло успешно.
-        "400":
-          description: Невалидная схема документа или входные данные не верны.
+        200:
+          description: Объект успешно удалён
+          content:
+            text/html:
+              schema:
+                type: string
+                example: ok
+        400:
+          description: Объект не соответсвует требованиям. Данные введены не верно
           content:
             application/json:
               schema:
@@ -127,10 +170,13 @@ paths:
                   value: |-
                     {
                       "code": 400,
-                      "message": "Validation Failed"
+                      "message": [
+                      {
+                        "inner_message": "ID введен неверно"}
+                      ]
                     }
-        "404":
-          description: Элемент не найден.
+        404:
+          description: Объект не найден
           content:
             application/json:
               schema:
@@ -140,92 +186,216 @@ paths:
                   value: |-
                     {
                       "code": 404,
-                      "message": "Item not found"
+                      "message": [
+                      {
+                        "inner_message": "Такого ID не существует"}
+                      ]
                     }
-    put:
-      tags:
-        - Базовый набор
-      summary: Обновить Космодесантника по id
+        429:
+          description: Слишком много запросов
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                response:
+                  value: |-
+                    {
+                      "code": 429,
+                      "message": [
+                      {
+                        "inner_message": "Вы превысили лимит запросов"}
+                      ]
+                    }
+    patch:
+      tags: [Базовые операции веб-сервиса №1]
+      summary: Обновить объект по id
       description: |
-        **Изменяет объект SpaceMarine по идентификатору**
-
-          - Поле name не может быть равно null или быть пустым
-          - Поле coordinates не может быть равно null
-          - Поле marinesCount не может быть равно null 
-          - Поле marinesCount должно быть больше 0
-          - Поле weaponType не может быть равно null 
-          - Поле meleeWeapon не может быть равно null 
-          - Поле health не может быть null
-          - Поле health должно быть больше 0
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/SpaceMarine"
+        **Введите id фильма**
       parameters:
-        - description: Идентификатор элемента
-          in: path
+        - in: path
           name: id
           required: true
           schema:
             type: integer
             format: id
-          example: 1
-      responses:
-        "200":
-          description: Изменение прошло успешно.
-        "400":
-          description: Невалидная схема документа или входные данные не верны.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-              examples:
-                response:
-                  value: |-
-                    {
-                      "code": 400,
-                      "message": "Validation Failed"
-                    }
-        "404":
-          description: Элемент не найден.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-              examples:
-                response:
-                  value: |-
-                    {
-                      "code": 404,
-                      "message": "Item not found"
-                    }
-  /spacemarines/search:
-    post:
-      tags:
-        - Базовый набор
-      summary: Получить страницу Космодесантников по фильтру
-      description: |
-        **Получает список объектов SpaceMarine по запросу**
-        
-          - Поле page не может быть равно null
-          - Поле page не может быть меньше 1
-          - Поле limit не может быть равно null
-          - Поле limit не может быть меньше 1
+            example: 1
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/SpaceMarineFilterRequest"
+              $ref: "#/components/schemas/Movie"
       responses:
-        "200":
-          description: Список элементов.
+        200:
+          description: Объект успешно удалён
+          content:
+            text/html:
+              schema:
+                type: string
+                example: ok
+  /movies/{id}/mpaaRating:
+      get:
+        tags: [Базовые операции веб-сервиса №1]
+        summary: Получить mpaaRating по id
+        description: |
+          **Введите id фильма**
+        parameters:
+          - in: path
+            name: id
+            required: true
+            schema:
+              type: integer
+              format: id
+              example: 1
+        responses:
+          200:
+            description: Информация об объекте получена
+            content:
+              application/json:
+                schema:
+                  type: string
+                  example: PG-13
+          400:
+            description: Объект не соответсвует требованиям. Данные введены не верно
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/Error"
+                examples:
+                  response:
+                    value: |-
+                      {
+                        "code": 400,
+                        "message": [
+                        {
+                          "inner_message": "ID введен неверно"}
+                        ]
+                      }
+          404:
+            description: Объект не найден
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/Error"
+                examples:
+                  response:
+                    value: |-
+                      {
+                        "code": 404,
+                        "message": [
+                        {
+                          "inner_message": "Такого ID не существует"}
+                        ]
+                      }
+          429:
+            description: Слишком много запросов
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/Error"
+                examples:
+                  response:
+                    value: |-
+                      {
+                        "code": 429,
+                        "message": [
+                        {
+                          "inner_message": "Вы превысили лимит запросов"}
+                        ]
+                      }              
+  /movies/search:
+    get:
+      tags: [Базовые операции веб-сервиса №1]
+      summary: Получить страницу Фильмов с использвоанием фильтров и сортировки
+      description: |
+        **Требования для списка**
+  
+        - name: Поле не может быть null, поле должно быть больше 0
+        - limit: Поле не может быть null, поле должно быть больше 0
+      parameters:
+        - name: page
+          description: Номер страницы
+          in: query
+          required: false
+          schema:
+            type: integer
+            example: 1
+            nullable: false
+        - name: limit
+          description: Количество объектов на странице
+          in: query
+          required: false
+          schema:
+            type: integer
+            example: 10
+            nullable: false
+        - name: sortById
+          description: Сортировка по id
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [asc, desc]
+            example: "asc"
+        - name: sortByName
+          description: Сортировка по названию
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [asc, desc]
+            example: "asc"
+        - name: sortByDate
+          description: Сортировка по дате
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [asc, desc]
+            example: "asc"
+        - name: oscarCount
+          in: query
+          required: false
+          description: Фильтр по количеству Оскаров (например, больше или равно 1)
+          schema:
+            type: integer
+            format: int32
+            example: 1  # Значение, с которым будет сравниваться количество Оскаров (например, больше 1)
+        - name: genre
+          in: query
+          required: false
+          description: Фильтр по жанру
+          schema:
+            type: string
+            enum:
+                - ACTION
+                - ADVENTURE
+                - SCIENCE_FICTION
+            example: "ACTION"
+        - name: mpaaRating
+          in: query
+          required: false
+          description: Фильтр по рейтингу(выводит все что меньше или равно заданного значения)
+          schema:
+            type: string
+            enum: [PG_13, R, NC_17]
+            example: "PG_13"
+        - name: director
+          in: query
+          required: false
+          description: Фильтр по имени режиссера
+          schema:
+            type: string
+            example: "Sergei Balabanov"
+      responses:
+        200:
+          description: Информация об объекте получена
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/SpaceMarineSearchResponse"
-        "400":
-          description: Невалидная схема документа или входные данные не верны.
+                $ref: "#/components/schemas/MovieSortedFiteredRespones"
+        400:
+          description: Объект не соответсвует требованиям. Данные введены не верно
           content:
             application/json:
               schema:
@@ -235,33 +405,103 @@ paths:
                   value: |-
                     {
                       "code": 400,
-                      "message": "Validation Failed"
+                      "message": [
+                      {
+                        "field": "id",
+                        "inner_message": "Это поле принимает только целочисленные знаечния"},
+                      {
+                        "field": "oscarsCount",
+                        "inner_message": "Это поле должно быть больше 0, поле может быть null"
+                      }
+                      ]
                     }
-  /spacemarines/group/melee:
-    post:
-      tags:
-        - Дополнительные операции
-      summary: Сгруппировать Космодесантников по meleeWeapon
-      description: |
-        **Сгруппировать объекты по значению поля meleeWeapon, вернуть количество элементов в каждой группе**
-
-      responses:
-        "200":
-          description: Распределение MeleeWeapon.
+        429:
+          description: Слишком много запросов
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/MeleeWeaponAllocation"
-  /spacemarines/search/name:
-    post:
-      tags:
-        - Дополнительные операции
-      summary: Получить массив Космодесантников по имени
-      description: |
-        **Вернуть массив объектов, значение поля name которых содержит заданную подстроку**
+                $ref: "#/components/schemas/Error"
+              examples:
+                response:
+                  value: |-
+                    {
+                      "code": 429,
+                      "message": [
+                      {
+                        "inner_message": "Вы превысили лимит запросов"}
+                      ]
+                    }
+      
         
-          - Поле name не может быть равно null
-          - Поле name не может быть пустым
+  /movies/search/count:
+    get:
+      tags: [Дополнительные операции веб-сервиса №1]
+      summary: Вернуть количество объектов, значение поля mpaaRating которых меньше заданного.
+      description: |
+        **Выберите значение**
+      parameters:
+        - name: mpaaRating
+          in: query
+          required: true
+          description: Значение MPAA рейтинга для фильтрации (например, "PG_13")
+          schema:
+            type: string
+            enum: [PG_13, R, NC_17]
+            example: "R"
+      responses:
+        200:
+          description: Успешный ответ с количеством фильмов
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    example: 5 
+        400:
+          description: Объект не соответсвует требованиям. Данные введены не верно
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                response:
+                  value: |-
+                    {
+                      "code": 400,
+                      "message": [
+                      {
+                        "field": "mpaaRating",
+                        "inner_message": "Вы должны выбрать значение из списка"
+                      }
+                      ]
+                    }
+        429:
+          description: Слишком много запросов
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                response:
+                  value: |-
+                    {
+                      "code": 429,
+                      "message": [
+                      {
+                        "inner_message": "Вы превысили лимит запросов"}
+                      ]
+                    }
+  /movies/search/name:
+    get:
+      tags: [Дополнительные операции веб-сервиса №1]
+        
+      summary: Вернуть массив объектов, значение поля name которых содержит заданную подстроку.
+      description: |
+          **Требования**
+        
+          - name: поле не может быть пустым‚ поле не может быть null
       parameters:
         - description: Подстрока Name
           in: query
@@ -269,16 +509,16 @@ paths:
           required: true
           schema:
             type: string
-          example: "сру"
+          example: "un"
       responses:
-        "200":
-          description: Список элементов.
+        200:
+          description: Список фильмов
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/SpaceMarineSearchResponse"
-        "400":
-          description: Невалидная схема документа или входные данные не верны.
+                $ref: "#/components/schemas/MovieSortedFiteredRespones"
+        400:
+          description: Объект не соответсвует требованиям. Данные введены не верно
           content:
             application/json:
               schema:
@@ -288,35 +528,55 @@ paths:
                   value: |-
                     {
                       "code": 400,
-                      "message": "Validation Failed"
+                      "message": [
+                      {
+                        "inner_message": "Ошибка валидации."
+                      }
+                      ]
                     }
-  /spacemarines/search/health/greater:
-    post:
-      tags:
-        - Дополнительные операции
-      summary: Получить массив Космодесантников по нижней границе здоровья
-      description: |
-        **Вернуть массив объектов, значение поля health которых больше заданного**
+        429:
+          description: Слишком много запросов
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                response:
+                  value: |-
+                    {
+                      "code": 429,
+                      "message": [
+                      {
+                        "inner_message": "Вы превысили лимит запросов"}
+                      ]
+                    }
+
+  /movies/search/director:
+    get:
+      tags: [Дополнительные операции веб-сервиса №1]
         
-          - Поле health не может быть равно null
-          - Поле health не может быть пустым
+      summary: Вернуть массив объектов, значение поля director которых меньше заданного.
+      description: |
+          **Требования**
+          **Поле выведет всех кто идет после по алфавиту 
+          - director: поле не может быть пустым‚ поле не может быть null
       parameters:
-        - description: Значение health
+        - description: Введите имя режиссера
           in: query
-          name: health
+          name: name
           required: true
           schema:
-            type: integer
-          example: 42
+            type: string
+          example: "George Lucas"
       responses:
-        "200":
-          description: Список элементов.
+        200:
+          description: Список фильмов
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/SpaceMarineSearchResponse"
-        "400":
-          description: Невалидная схема документа или входные данные не верны.
+                $ref: "#/components/schemas/MovieSortedFiteredRespones"
+        400:
+          description: Объект не соответсвует требованиям. Данные введены не верно
           content:
             application/json:
               schema:
@@ -326,276 +586,193 @@ paths:
                   value: |-
                     {
                       "code": 400,
-                      "message": "Validation Failed"
+                      "message": [
+                      {
+                        "inner_message": "Ошибка валидации."
+                      }
+                      ]
                     }
+        429:
+          description: Слишком много запросов
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                response:
+                  value: |-
+                    {
+                      "code": 429,
+                      "message": [
+                      {
+                        "inner_message": "Вы превысили лимит запросов"}
+                      ]
+                    }
+
+
+
+
+
+      
 components:
   schemas:
-    AstartesCategory:
-      type: string
-      description: Тип солдата
-      enum:
-        - AGGRESSOR
-        - ASSAULT
-        - HELIX
-    Weapon:
-      type: string
-      description: Тип оружия дальнего боя
-      enum:
-        - COMBI_FLAMER
-        - GRENADE_LAUNCHER
-        - INFERNO_PISTOL
-    MeleeWeapon:
-      type: string
-      description: Тип оружия ближнего война
-      enum:
-        - CHAIN_SWORD
-        - CHAIN_AXE
-        - POWER_FIST
+  
+    Movie:
+      type: object
+      required: 
+        - name
+        - coordinates  
+        - directorID
+      properties:
+        name: 
+          type: string
+          example: Dune
+          nullable: false
+        coordinates:
+          $ref: "#/components/schemas/Coordinates"
+        oscarCount:
+          type: integer
+          example: 1
+          nullable: true
+        genre:
+          $ref: "#/components/schemas/MovieGenre"
+        mpaaRating:
+          $ref: "#/components/schemas/MpaaRating"
+        directorName:
+          type: string
+          example: Sergei Balabanov
+          nullable: false
+          
+          
     Coordinates:
       type: object
       required:
-        - x
         - y
       properties:
         x:
           type: integer
-          format: int64
-          nullable: false
-          description: Координата X
           example: 100
+          nullable: true
         y:
-          type: integer
+          type: number
+          format: float
+          example: -100.1
           nullable: false
-          description: Координата Y
-          example: -100
-    Chapter:
+          
+    Person:
       type: object
       required:
         - name
-        - marinesCount
-        - world
+        - weight
+        - passportID
       properties:
         name:
           type: string
+          example: Sergei Balabanov
           nullable: false
-          description: Название chapter
-          example: "Тестовое название"
-        parentLegion:
-          type: string
-          description: Нечто непонятное
+        height:
+          type: number
+          format: double
+          example: 180.0
           nullable: true
-          example: "Тестовый легион"
-        marinesCount:
-          type: integer
+        weight:
+          type: number
+          format: double
+          example: 100.0
           nullable: false
-          description: Количество солдат
-          example: 50
-        world:
+        passportID:
           type: string
-          nullable: false
-          description: Название мира
-          example: "Тестовый мир"
-    Starship:
+          example: 2024 123456
+          nullable: true
+        location:
+          $ref: "#/components/schemas/Location"
+          
+    
+    Location:
       type: object
       required:
-        - name
-        - Coordinates
-        - health
+        - y
       properties:
+        x:
+          type: number
+          format: float
+          example: 100.1
+          nullable: true
+        y: 
+          type: number
+          format: float
+          example: 100.1
         name:
           type: string
-          nullable: false
-          description: Название starship
-          example: "U.S.S. Discovery One"
-        Coordinates:
-           $ref: "#/components/schemas/Coordinates"
-        health:
-          type: integer
-          nullable: false
-          description: Количество здоровья
-          example: 100
-        marinesCount:
-          type: integer
-          nullable: false
-          description: Количество солдат
-          example: 500
-        fleet:
-          type: string
-          nullable: false
-          description: Название флота, к которому пренадлежит корабль
-          example: "Скарус"
-    SpaceMarine:
-      type: object
-      required:
-        - name
-        - Coordinates
-        - health
-        - category
-        - weaponType
-        - meleeWeapon
-      properties:
-        name:
-          type: string
-          nullable: false
-          description: Имя SpaceMarine
-          example: "Думгай"
-        Coordinates:
-          $ref: "#/components/schemas/Coordinates"
-        health:
-          type: integer
-          nullable: false
-          description: Количество здоровья
-          example: 50
-        category:
-          $ref: "#/components/schemas/AstartesCategory"
-        weaponType:
-          $ref: "#/components/schemas/Weapon"
-        meleeWeapon:
-          $ref: "#/components/schemas/MeleeWeapon"
-        chapterId:
-          type: integer
+          example: ITMO University
           nullable: true
-          description: Идентификатор Chapter
-          example: 1
-        starshipId:
-          type: integer
-          nullable: true
-          description: Идентификатор Starship
-          example: 1
-    SpaceMarineResponse:
+    
+    MovieGenre:
+      type: string
+      enum:
+        - ACTION
+        - ADVENTURE
+        - SCIENCE_FICTION
+    
+    MpaaRating:
+      type: string
+      enum: 
+        - PG_13
+        - R
+        - NC_17
+    
+    MovieObjectResponse:
       type: object
       required:
         - id
         - name
-        - Coordinates
-        - health
-        - category
+        - coordinates
         - creationDate
-        - weaponType
-        - meleeWeapon
+        - oscarCount
+        - genre
+        - mpaaRating
+        - director
       properties:
-        id:
+        id: 
           type: integer
-          nullable: false
-          description: Идентификатор SpaceMarine
+          format: int64
           example: 1
-        name:
-          type: string
           nullable: false
-          description: Имя SpaceMarine
-          example: "Думгай"
-        Coordinates:
+        name: 
+          type: string
+          example: Dune
+          nullable: false
+        coordinates:
           $ref: "#/components/schemas/Coordinates"
         creationDate:
           type: string
           nullable: false
           format: date-time
-          description: Время создания элемента.
-        health:
+        oscarCount:
           type: integer
-          nullable: false
-          description: Количество здоровья
-          example: 50
-        category:
-          $ref: "#/components/schemas/AstartesCategory"
-        weaponType:
-          $ref: "#/components/schemas/Weapon"
-        meleeWeapon:
-          $ref: "#/components/schemas/MeleeWeapon"
-        chapter:
-          $ref: "#/components/schemas/Chapter"
-        starship:
-          $ref: "#/components/schemas/Starship"
-    SpaceMarineFields:
-      type: string
-      description: Поле для сортировки
-      enum:
-        - name
-        - health
-        - creationDate
-        - category
-        - weaponType
-        - meleeWeapon
-    SpaceMarineFilterRequest:
-      type: object
-      required:
-        - page
-        - limit
-      properties:
-        page:
-          type: integer
-          nullable: false
-          description: Номер страницы со списком полученных объектов
           example: 1
-        limit:
-          type: integer
-          nullable: false
-          description: Количество элементов на одной странице
-          example: 10
-        id:
-          type: integer
           nullable: true
-          description: Имя SpaceMarine, по которому будет произведена фильтрация
-          example: 1
-        name:
-          type: string
-          nullable: true
-          description: Имя SpaceMarine, по которому будет произведена фильтрация
-          example: "Думгай"
-        health:
-          type: integer
-          nullable: true
-          description: Количество здоровья, по которому будет произведена фильтрация
-          example: 50
-        creationDate:
-          type: string
-          nullable: true
-          format: date-time
-          description: Время создания элемента.
-        category:
-          type: string
-          nullable: true
-          description: Тип солдата, по которому будет произведена фильтрация
-          example: "AGGRESSOR"
-        weaponType:
-          type: string
-          nullable: true
-          description: Тип оружия дальнего боя, по которому будет произведена фильтрация
-          example: "COMBI_FLAMER"
-        meleeWeapon:
-          type: string
-          nullable: true
-          description: Тип оружия ближнего боя, по которому будет произведена фильтрация
-          example: "CHAIN_SWORD"
-        sortBy:
-          $ref: "#/components/schemas/SpaceMarineFields"
-    SpaceMarineSearchResponse:
+        genre:
+          $ref: "#/components/schemas/MovieGenre"
+        mpaaRating:
+          $ref: "#/components/schemas/MpaaRating"
+        director:
+          $ref: "#/components/schemas/Person"
+    
+    
+    MovieSortedFiteredRespones:
       type: object
       properties:
         items:
-          description: Список SpaceMarine по запросу.
           type: array
           items:
-            $ref: "#/components/schemas/SpaceMarineResponse"
-    MeleeWeaponAllocation:
-      type: object
-      required:
-        - CHAIN_SWORD
-        - CHAIN_AXE
-        - POWER_FIST
-      properties:
-        CHAIN_SWORD:
-          type: integer
-          description: Количество солдат с CHAIN_SWORD
-          example: 137
-        CHAIN_AXE:
-          type: integer
-          description: Количество солдат с CHAIN_AXE
-          example: 137
-        POWER_FIST:
-          type: integer
-          description: Количество солдат с POWER_FIST
-          example: 137
+            $ref: "#/components/schemas/MovieObjectResponse"
+      
+      
+      
+    
+    
+    
     Error:
       required:
         - code
@@ -606,4 +783,26 @@ components:
           type: integer
         message:
           nullable: false
-          type: string
+          type: array
+          items:
+            type: object
+            required:
+            - inner_message
+            properties:
+              field:
+                type: string
+              inner_message:
+                type: string
+
+          
+    
+          
+      
+          
+      
+        
+          
+        
+    
+      
+          
