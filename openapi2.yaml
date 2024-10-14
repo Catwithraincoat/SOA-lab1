@@ -1,34 +1,22 @@
-openapi: 3.0.0
+openapi: 3.0.3
 info:
-  description: "Лабораторная работа №1. Разработать спецификацию в формате OpenAPI для набора веб-сервисов"
-  title: Сервис-Ориентированная Архитектура
-  version: "1.0"
-tags:
-  - name: API
-    description: Операции, взаимодействующие с первым веб-сервисом
+  title: СОА Лабораторная №1
+  description: Документация для набора веб-сервисов в рамках лабораторной №1
+  version: 0.0.1
 paths:
-  /starships/{id}/unload:
-    post:
-      tags:
-        - API
-      summary: Выгрузить всех десантников с корабля
-      description: |
-        **Выгружает всех SpaceMarine из Starship**
-
-      parameters:
-        - description: Идентификатор элемента
-          in: path
-          name: id
-          required: true
-          schema:
-            type: integer
-            format: id
-          example: 1
+  /oscars/movies/get-loosers:
+    get:
+      tags: [Операции веб-сервиса №2]
+      summary: получить список фильмов, не имеющих ни одного "Оскара"
       responses:
-        "200":
-          description: Вызгрузка прошл успешно.
-        "400":
-          description: Невалидная схема документа или входные данные не верны.
+        200:
+          description: Список фильмов
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MovieSortedFiteredRespones"
+        429:
+          description: Слишком много запросов
           content:
             application/json:
               schema:
@@ -37,52 +25,25 @@ paths:
                 response:
                   value: |-
                     {
-                      "code": 400,
-                      "message": "Validation Failed"
+                      "code": 429,
+                      "message": [
+                      {
+                        "inner_message": "Вы превысили лимит запросов"}
+                      ]
                     }
-        "404":
-          description: Элемент не найден.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-              examples:
-                response:
-                  value: |-
-                    {
-                      "code": 404,
-                      "message": "Item not found"
-                    }
-  /starships/{starship-id}/load/{spacemarine-id}:
-    put:
-      tags:
-        - API
-      summary: Погрузить Космодесантника на Корабль
-      description: |
-        **Погружает выбранного SpaceMarine в выбранный Starship**
-
-      parameters:
-        - description: Идентификатор Starship
-          in: path
-          name: starship-id
-          required: true
-          schema:
-            type: integer
-            format: id
-          example: 1
-        - description: Идентификатор SpaceMarine
-          in: path
-          name: spacemarine-id
-          required: true
-          schema:
-            type: integer
-            format: id
-          example: 1
+  /oscars/directors/get-loosers:
+    get:
+      tags: [Операции веб-сервиса №2]
+      summary: получить список режиссёров, ни один фильм которых не получил ни одного "Оскара"
       responses:
-        "200":
-          description: Погрузка прошло успешно.
-        "400":
-          description: Невалидная схема документа или входные данные не верны.
+        200:
+          description: Список режиссеров
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DirectorsArray"
+        429:
+          description: Слишком много запросов
           content:
             application/json:
               schema:
@@ -91,104 +52,164 @@ paths:
                 response:
                   value: |-
                     {
-                      "code": 400,
-                      "message": "Validation Failed"
+                      "code": 429,
+                      "message": [
+                      {
+                        "inner_message": "Вы превысили лимит запросов"}
+                      ]
                     }
-        "404":
-          description: Элемент не найден.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-              examples:
-                response:
-                  value: |-
-                    {
-                      "code": 404,
-                      "message": "Item not found"
-                    }
-  /starships:
-    post:
-      tags:
-        - API
-      summary: Зачислить новый Отряд
-      description: |
-        **Создает новый объект Chapter**
-        
-          - Поле name не может быть равно null или быть пустым
-          - Поле marinesCount не может быть равно null 
-          - Поле marinesCount должно быть больше 0 и не более 1000
-          - Поле world не может быть равно null 
 
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/Starship"
-      responses:
-        "200":
-          description: Создание прошло успешно.
-        "400":
-          description: Невалидная схема документа или входные данные не верны.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-              examples:
-                response:
-                  value: |-
-                    {
-                      "code": 400,
-                      "message": "Validation Failed"
-                    }
+
+
+
+
+
+      
 components:
   schemas:
+          
+          
     Coordinates:
       type: object
       required:
-        - x
         - y
       properties:
         x:
           type: integer
-          format: int64
-          nullable: false
-          description: Координата X
           example: 100
+          nullable: true
         y:
-          type: integer
+          type: number
+          format: float
+          example: -100.1
           nullable: false
-          description: Координата Y
-          example: -100
-    Starship:
+          
+    Person:
       type: object
       required:
         - name
-        - Coordinates
-        - health
+        - weight
+        - passportID
       properties:
         name:
           type: string
+          example: Sergei Balabanov
           nullable: false
-          description: Название starship
-          example: "U.S.S. Discovery One"
-        Coordinates:
-           $ref: "#/components/schemas/Coordinates"
-        health:
+        height:
+          type: number
+          format: double
+          example: 180.0
+          nullable: true
+        weight:
+          type: number
+          format: double
+          example: 100.0
+          nullable: false
+        passportID:
+          type: string
+          example: 2024 123456
+          nullable: true
+        location:
+          $ref: "#/components/schemas/Location"
+          
+    
+    Location:
+      type: object
+      required:
+        - y
+      properties:
+        x:
+          type: number
+          format: float
+          example: 100.1
+          nullable: true
+        y: 
+          type: number
+          format: float
+          example: 100.1
+        name:
+          type: string
+          example: ITMO University
+          nullable: true
+    
+    MovieGenre:
+      type: string
+      enum:
+        - ACTION
+        - ADVENTURE
+        - SCIENCE_FICTION
+    
+    MpaaRating:
+      type: string
+      enum: 
+        - PG_13
+        - R
+        - NC_17
+    
+    MovieObjectResponse:
+      type: object
+      required:
+        - id
+        - name
+        - coordinates
+        - creationDate
+        - oscarCount
+        - genre
+        - mpaaRating
+        - director
+      properties:
+        id: 
           type: integer
+          format: int64
+          example: 1
           nullable: false
-          description: Количество здоровья
-          example: 100
-        marinesCount:
-          type: integer
+        name: 
+          type: string
+          example: Dune
           nullable: false
-          description: Количество солдат
-          example: 500
-        fleet:
+        coordinates:
+          $ref: "#/components/schemas/Coordinates"
+        creationDate:
           type: string
           nullable: false
-          description: Название флота, к которому пренадлежит корабль
-          example: "Скарус"
+          format: date-time
+        oscarCount:
+          type: integer
+          example: 1
+          nullable: true
+        genre:
+          $ref: "#/components/schemas/MovieGenre"
+        mpaaRating:
+          $ref: "#/components/schemas/MpaaRating"
+        director:
+          $ref: "#/components/schemas/Person"
+    
+    
+    MovieSortedFiteredRespones:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/MovieObjectResponse"
+      
+    DirectorsArray:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            type: object
+            required:
+            - directorName
+            properties:
+              directorName:
+                type: string
+                example: "Sergei Balabanov"
+      
+    
+    
+    
     Error:
       required:
         - code
@@ -199,4 +220,27 @@ components:
           type: integer
         message:
           nullable: false
-          type: string
+          type: array
+          items:
+            type: object
+            required:
+            - inner_message
+            properties:
+              field:
+                type: string
+              inner_message:
+                type: string
+                
+
+          
+    
+          
+      
+          
+      
+        
+          
+        
+    
+      
+          
