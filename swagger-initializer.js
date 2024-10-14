@@ -5,7 +5,7 @@ window.onload = function() {
   window.ui = SwaggerUIBundle({
      urls: [
           { url: "./openapi1.yaml", name: "Collection Web Service" },
-          { url: "./openapi2.yaml", name: "Chapter Web Service" }
+          { url: "./openapi2.yaml", name: "Oscar Web Service" }
         ],    dom_id: '#swagger-ui',
     deepLinking: true,
     presets: [
