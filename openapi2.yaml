@@ -4,7 +4,7 @@ info:
   description: Документация для набора веб-сервисов в рамках лабораторной №1
   version: 0.0.1
 paths:
-  /oscars/movies/get-loosers:
+  /oscar/movies/get-loosers:
     get:
       tags: [Операции веб-сервиса №2]
       summary: получить список фильмов, не имеющих ни одного "Оскара"
@@ -25,13 +25,28 @@ paths:
                 response:
                   value: |-
                     {
-                      "code": 429,
                       "message": [
                       {
                         "inner_message": "Вы превысили лимит запросов"}
                       ]
                     }
-  /oscars/directors/get-loosers:
+        503:
+          description: Сервис временно не доступен
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                response:
+                  value: |-
+                    {
+                      "message": [
+                      {
+                        "inner_message": "Попробуйте повторить запрос позже"}
+                      ]
+                    }
+
+  /oscar/directors/get-loosers:
     get:
       tags: [Операции веб-сервиса №2]
       summary: получить список режиссёров, ни один фильм которых не получил ни одного "Оскара"
@@ -52,10 +67,24 @@ paths:
                 response:
                   value: |-
                     {
-                      "code": 429,
                       "message": [
                       {
                         "inner_message": "Вы превысили лимит запросов"}
+                      ]
+                    }
+        503:
+          description: Сервис временно не доступен
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                response:
+                  value: |-
+                    {
+                      "message": [
+                      {
+                        "inner_message": "Попробуйте повторить запрос позже"}
                       ]
                     }
 
@@ -212,12 +241,8 @@ components:
     
     Error:
       required:
-        - code
         - message
       properties:
-        code:
-          nullable: false
-          type: integer
         message:
           nullable: false
           type: array
@@ -243,4 +268,5 @@ components:
         
     
       
+
           
