@@ -28,11 +28,11 @@ paths:
         200:
           description: Объект успешно добавлен
           content:
-            text/html:
+            application/json:
               schema:
                 type: string
                 example: ok
-        400:
+        422:
           description: Объект не соответсвует требованиям. Данные введены не верно
           content:
             application/json:
@@ -42,7 +42,6 @@ paths:
                 response:
                   value: |-
                     {
-                      "code": 400,
                       "message": [
                       {
                         "field": "name",
@@ -63,12 +62,27 @@ paths:
                 response:
                   value: |-
                     {
-                      "code": 429,
                       "message": [
                       {
                         "inner_message": "Вы превысили лимит запросов"}
                       ]
                     }
+        500:
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                response:
+                  value: |-
+                    {
+                      "message": [
+                      {
+                        "inner_message": "Запрос не удалось обработать"}
+                      ]
+                    }
+                
   /movies/{id}:
     get:
       tags: [Базовые операции веб-сервиса №1]
@@ -90,22 +104,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/MovieObjectResponse"
-        400:
-          description: Объект не соответсвует требованиям. Данные введены не верно
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-              examples:
-                response:
-                  value: |-
-                    {
-                      "code": 400,
-                      "message": [
-                      {
-                        "inner_message": "ID введен неверно"}
-                      ]
-                    }
         404:
           description: Объект не найден
           content:
@@ -116,10 +114,24 @@ paths:
                 response:
                   value: |-
                     {
-                      "code": 404,
                       "message": [
                       {
                         "inner_message": "Такого ID не существует"}
+                      ]
+                    }
+        422:
+          description: Объект не соответсвует требованиям. Данные введены не верно
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                response:
+                  value: |-
+                    {
+                      "message": [
+                      {
+                        "inner_message": "ID введен неверно"}
                       ]
                     }
         429:
@@ -132,10 +144,24 @@ paths:
                 response:
                   value: |-
                     {
-                      "code": 429,
                       "message": [
                       {
                         "inner_message": "Вы превысили лимит запросов"}
+                      ]
+                    }
+        500:
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                response:
+                  value: |-
+                    {
+                      "message": [
+                      {
+                        "inner_message": "Запрос не удалось обработать"}
                       ]
                     }
     delete:
@@ -155,26 +181,10 @@ paths:
         200:
           description: Объект успешно удалён
           content:
-            text/html:
+            application/json:
               schema:
                 type: string
                 example: ok
-        400:
-          description: Объект не соответсвует требованиям. Данные введены не верно
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-              examples:
-                response:
-                  value: |-
-                    {
-                      "code": 400,
-                      "message": [
-                      {
-                        "inner_message": "ID введен неверно"}
-                      ]
-                    }
         404:
           description: Объект не найден
           content:
@@ -185,10 +195,24 @@ paths:
                 response:
                   value: |-
                     {
-                      "code": 404,
                       "message": [
                       {
                         "inner_message": "Такого ID не существует"}
+                      ]
+                    }
+        422:
+          description: Объект не соответсвует требованиям. Данные введены не верно
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                response:
+                  value: |-
+                    {
+                      "message": [
+                      {
+                        "inner_message": "ID введен неверно"}
                       ]
                     }
         429:
@@ -201,12 +225,27 @@ paths:
                 response:
                   value: |-
                     {
-                      "code": 429,
                       "message": [
                       {
                         "inner_message": "Вы превысили лимит запросов"}
                       ]
                     }
+        500:
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                response:
+                  value: |-
+                    {
+                      "message": [
+                      {
+                        "inner_message": "Запрос не удалось обработать"}
+                      ]
+                    }
+                    
     patch:
       tags: [Базовые операции веб-сервиса №1]
       summary: Обновить объект по id
@@ -229,49 +268,11 @@ paths:
         200:
           description: Объект успешно удалён
           content:
-            text/html:
+            application/json:
               schema:
                 type: string
                 example: ok
-  /movies/{id}/mpaaRating:
-      get:
-        tags: [Базовые операции веб-сервиса №1]
-        summary: Получить mpaaRating по id
-        description: |
-          **Введите id фильма**
-        parameters:
-          - in: path
-            name: id
-            required: true
-            schema:
-              type: integer
-              format: id
-              example: 1
-        responses:
-          200:
-            description: Информация об объекте получена
-            content:
-              application/json:
-                schema:
-                  type: string
-                  example: PG-13
-          400:
-            description: Объект не соответсвует требованиям. Данные введены не верно
-            content:
-              application/json:
-                schema:
-                  $ref: "#/components/schemas/Error"
-                examples:
-                  response:
-                    value: |-
-                      {
-                        "code": 400,
-                        "message": [
-                        {
-                          "inner_message": "ID введен неверно"}
-                        ]
-                      }
-          404:
+        404:
             description: Объект не найден
             content:
               application/json:
@@ -281,120 +282,12 @@ paths:
                   response:
                     value: |-
                       {
-                        "code": 404,
                         "message": [
                         {
                           "inner_message": "Такого ID не существует"}
                         ]
                       }
-          429:
-            description: Слишком много запросов
-            content:
-              application/json:
-                schema:
-                  $ref: "#/components/schemas/Error"
-                examples:
-                  response:
-                    value: |-
-                      {
-                        "code": 429,
-                        "message": [
-                        {
-                          "inner_message": "Вы превысили лимит запросов"}
-                        ]
-                      }              
-  /movies/search:
-    get:
-      tags: [Базовые операции веб-сервиса №1]
-      summary: Получить страницу Фильмов с использвоанием фильтров и сортировки
-      description: |
-        **Требования для списка**
-  
-        - name: Поле не может быть null, поле должно быть больше 0
-        - limit: Поле не может быть null, поле должно быть больше 0
-      parameters:
-        - name: page
-          description: Номер страницы
-          in: query
-          required: false
-          schema:
-            type: integer
-            example: 1
-            nullable: false
-        - name: limit
-          description: Количество объектов на странице
-          in: query
-          required: false
-          schema:
-            type: integer
-            example: 10
-            nullable: false
-        - name: sortById
-          description: Сортировка по id
-          in: query
-          required: false
-          schema:
-            type: string
-            enum: [asc, desc]
-            example: "asc"
-        - name: sortByName
-          description: Сортировка по названию
-          in: query
-          required: false
-          schema:
-            type: string
-            enum: [asc, desc]
-            example: "asc"
-        - name: sortByDate
-          description: Сортировка по дате
-          in: query
-          required: false
-          schema:
-            type: string
-            enum: [asc, desc]
-            example: "asc"
-        - name: oscarCount
-          in: query
-          required: false
-          description: Фильтр по количеству Оскаров (например, больше или равно 1)
-          schema:
-            type: integer
-            format: int32
-            example: 1  # Значение, с которым будет сравниваться количество Оскаров (например, больше 1)
-        - name: genre
-          in: query
-          required: false
-          description: Фильтр по жанру
-          schema:
-            type: string
-            enum:
-                - ACTION
-                - ADVENTURE
-                - SCIENCE_FICTION
-            example: "ACTION"
-        - name: mpaaRating
-          in: query
-          required: false
-          description: Фильтр по рейтингу(выводит все что меньше или равно заданного значения)
-          schema:
-            type: string
-            enum: [PG_13, R, NC_17]
-            example: "PG_13"
-        - name: director
-          in: query
-          required: false
-          description: Фильтр по имени режиссера
-          schema:
-            type: string
-            example: "Sergei Balabanov"
-      responses:
-        200:
-          description: Информация об объекте получена
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/MovieSortedFiteredRespones"
-        400:
+        422:
           description: Объект не соответсвует требованиям. Данные введены не верно
           content:
             application/json:
@@ -404,7 +297,157 @@ paths:
                 response:
                   value: |-
                     {
-                      "code": 400,
+                      "message": [
+                      {
+                        "inner_message": "ID введен неверно"}
+                      ]
+                    }
+        429:
+            description: Слишком много запросов
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/Error"
+                examples:
+                  response:
+                    value: |-
+                      {
+                        "message": [
+                        {
+                          "inner_message": "Вы превысили лимит запросов"}
+                        ]
+                      } 
+        500:
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                response:
+                  value: |-
+                    {
+                      "message": [
+                      {
+                        "inner_message": "Запрос не удалось обработать"}
+                      ]
+                    }
+
+  /movies/search:
+    get:
+      tags: [Базовые операции веб-сервиса №1]
+      summary: Получить страницу фильмов 
+      parameters:
+        - name: sort
+          description: Поля сортировки
+          in: query
+          required: false
+          explode: true
+          schema:
+            type: array
+            items:
+              type: string
+              default: id
+              enum:
+                - id
+                - name
+                - creationDate
+                - coordinates.x
+                - coordinates.y
+                - oscarCount
+                - genre
+                - mpaaRating
+                - director.name
+                - director.weight
+                - director.passportID
+                - director.height
+                - director.location.name
+                - director.location.x
+                - director.location.y
+        - name: type
+          description: Сортировка по возрастанию или убыванию
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [asc, desc]
+            example: "asc"  
+        - name: filter
+          in: query
+          description: Поля фильтрации. Выбирается поле, один из оперторов сравнения( "eq", "ne", "gt", "lt", "lte", "gte") и значение, по которому будет происходить сравнение.
+          required: false
+          style: form
+          explode: true
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                field:
+                  type: string
+                  enum:
+                    - id
+                    - name
+                    - creationDate
+                    - coordinates.x
+                    - coordinates.y
+                    - area
+                    - numberOfRooms
+                    - floor
+                    - timeToMetroOnFoot
+                    - view
+                    - house.name
+                    - house.year
+                    - house.numberOfFloors
+                operator:
+                  type: string
+                  enum:
+                    - eq
+                    - ne
+                    - gt
+                    - lt
+                    - lte
+                    - gte
+                value:
+                  type: string
+            example:
+                  - field: id
+                    operator: eq
+                    value: '1'
+        - name: page
+          in: query
+          required: true
+          description: Номер страницы, по дефолту используется первая. 0 - если нужны все страницы
+          schema:
+            type: integer
+            default: 1
+            minimum: 0
+        - name: pageSize
+          in: query
+          required: true
+          description: Ограничение записей на страницу. Если записей на странице меньше заданного числа, будут выведены все 
+          schema:
+            type: integer
+            default: 10
+            minimum: 1
+
+      responses:
+        200:
+          description: Информация об объекте получена
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MovieSortedFiteredRespones"
+        422:
+          description: Объект не соответсвует требованиям. Данные введены не верно
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                response:
+                  value: |-
+                    {
                       "message": [
                       {
                         "field": "id",
@@ -425,12 +468,121 @@ paths:
                 response:
                   value: |-
                     {
-                      "code": 429,
                       "message": [
                       {
                         "inner_message": "Вы превысили лимит запросов"}
                       ]
                     }
+        500:
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                response:
+                  value: |-
+                    {
+                      "message": [
+                      {
+                        "inner_message": "Запрос не удалось обработать"}
+                      ]
+                    }                    
+  /mpaaRatings:
+      get:
+        tags: [Базовые операции веб-сервиса №1]
+        summary: Получить список mpaaRating 
+        responses:
+          200:
+            description: Запрос успешно обработан
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/MpaaRating"
+                examples:
+                  response:
+                    value:
+                      - PG_13
+                      - R
+                      - NC_17
+          429:
+            description: Слишком много запросов
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/Error"
+                examples:
+                  response:
+                    value: |-
+                      {
+                        "message": [
+                        {
+                          "inner_message": "Вы превысили лимит запросов"}
+                        ]
+                      }
+          500:
+            description: Внутренняя ошибка сервера
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/Error"
+                examples:
+                  response:
+                    value: |-
+                      {
+                        "message": [
+                        {
+                          "inner_message": "Запрос не удалось обработать"}
+                        ]
+                      }
+  /movieGenres:
+    get:
+      tags: [Базовые операции веб-сервиса №1]
+      summary: Получить список movieGenre
+      responses:
+          200:
+            description: Запрос успешно обработан
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/MovieGenre"
+                examples:
+                  response:
+                    value:
+                      - ACTION
+                      - ADVENTURE
+                      - SCIENCE_FICTION
+          429:
+            description: Слишком много запросов
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/Error"
+                examples:
+                  response:
+                    value: |-
+                      {
+                        "message": [
+                        {
+                          "inner_message": "Вы превысили лимит запросов"}
+                        ]
+                      }
+          500:
+            description: Внутренняя ошибка сервера
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/Error"
+                examples:
+                  response:
+                    value: |-
+                      {
+                        "message": [
+                        {
+                          "inner_message": "Запрос не удалось обработать"}
+                        ]
+                      }
+  
       
         
   /movies/search/count:
@@ -459,7 +611,7 @@ paths:
                   count:
                     type: integer
                     example: 5 
-        400:
+        422:
           description: Объект не соответсвует требованиям. Данные введены не верно
           content:
             application/json:
@@ -469,7 +621,6 @@ paths:
                 response:
                   value: |-
                     {
-                      "code": 400,
                       "message": [
                       {
                         "field": "mpaaRating",
@@ -487,38 +638,13 @@ paths:
                 response:
                   value: |-
                     {
-                      "code": 429,
                       "message": [
                       {
                         "inner_message": "Вы превысили лимит запросов"}
                       ]
                     }
-  /movies/search/name:
-    get:
-      tags: [Дополнительные операции веб-сервиса №1]
-        
-      summary: Вернуть массив объектов, значение поля name которых содержит заданную подстроку.
-      description: |
-          **Требования**
-        
-          - name: поле не может быть пустым‚ поле не может быть null
-      parameters:
-        - description: Подстрока Name
-          in: query
-          name: name
-          required: true
-          schema:
-            type: string
-          example: "un"
-      responses:
-        200:
-          description: Список фильмов
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/MovieSortedFiteredRespones"
-        400:
-          description: Объект не соответсвует требованиям. Данные введены не верно
+        500:
+          description: Внутренняя ошибка сервера
           content:
             application/json:
               schema:
@@ -527,93 +653,13 @@ paths:
                 response:
                   value: |-
                     {
-                      "code": 400,
                       "message": [
                       {
-                        "inner_message": "Ошибка валидации."
-                      }
+                        "inner_message": "Запрос не удалось обработать"}
                       ]
                     }
-        429:
-          description: Слишком много запросов
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-              examples:
-                response:
-                  value: |-
-                    {
-                      "code": 429,
-                      "message": [
-                      {
-                        "inner_message": "Вы превысили лимит запросов"}
-                      ]
-                    }
+                    
 
-  /movies/search/director:
-    get:
-      tags: [Дополнительные операции веб-сервиса №1]
-        
-      summary: Вернуть массив объектов, значение поля director которых меньше заданного.
-      description: |
-          **Требования**
-          **Поле выведет всех кто идет после по алфавиту 
-          - director: поле не может быть пустым‚ поле не может быть null
-      parameters:
-        - description: Введите имя режиссера
-          in: query
-          name: name
-          required: true
-          schema:
-            type: string
-          example: "George Lucas"
-      responses:
-        200:
-          description: Список фильмов
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/MovieSortedFiteredRespones"
-        400:
-          description: Объект не соответсвует требованиям. Данные введены не верно
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-              examples:
-                response:
-                  value: |-
-                    {
-                      "code": 400,
-                      "message": [
-                      {
-                        "inner_message": "Ошибка валидации."
-                      }
-                      ]
-                    }
-        429:
-          description: Слишком много запросов
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-              examples:
-                response:
-                  value: |-
-                    {
-                      "code": 429,
-                      "message": [
-                      {
-                        "inner_message": "Вы превысили лимит запросов"}
-                      ]
-                    }
-
-
-
-
-
-      
 components:
   schemas:
   
@@ -775,12 +821,8 @@ components:
     
     Error:
       required:
-        - code
         - message
       properties:
-        code:
-          nullable: false
-          type: integer
         message:
           nullable: false
           type: array
